@@ -57,6 +57,29 @@ KeyboardInputManager.prototype.listen = function () {
   retry.addEventListener("click", this.restart.bind(this));
   retry.addEventListener("touchend", this.restart.bind(this));
 
+  // Bind score container, for restart.
+  var scoreContainer = document.getElementById("score-container");
+  scoreContainer.addEventListener("click", (function () {
+    var count = 0;
+    var pending = false;
+    return function (event) {
+      count += 1;
+      if (count >= 3) {
+        count = 0;
+        if (false !== pending)
+          clearTimeout(pending);
+        pending = false;
+        self.emit("restart");
+      } else if (false === pending) {
+        pending = setTimeout(function () {
+          count = 0;
+          pending = false;
+        }, 1000);
+      }
+      event.preventDefault();
+    };
+  })());
+
   // Listen to swipe events
   var touchStartClientX, touchStartClientY;
   var gameContainer = document.getElementsByClassName("game-container")[0];
