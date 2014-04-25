@@ -70,8 +70,7 @@ KeyboardInputManager.prototype.listen = function () {
           clearTimeout(pending);
         pending = false;
         self.emit("restart");
-      }
-      if (false === pending) {
+      } else if (false === pending) {
         pending = setTimeout(function () {
           count = 0;
           pending = false;
