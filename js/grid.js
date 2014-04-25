@@ -83,32 +83,32 @@ Grid.prototype.withinBounds = function (position) {
 };
 
 Grid.prototype.state = function () {
-    var state = {values:[]};
-    for (var x = 0; x < this.size; ++x) {
-        for (var y = 0; y < this.size; ++y) {
-            var tile = this.cells[x][y];
-            if (tile)
-                state.values.push(tile.value);
-            else
-                state.values.push(0);
-        }
+  var state = {values:[]};
+  for (var x = 0; x < this.size; ++x) {
+    for (var y = 0; y < this.size; ++y) {
+      var tile = this.cells[x][y];
+      if (tile)
+        state.values.push(tile.value);
+      else
+        state.values.push(0);
     }
-    return state;
+  }
+  return state;
 };
 
 Grid.prototype.setState = function (state) {
-    var n = this.size;
-    if (state.values.length != n * n) {
-        throw new Error("Old state does not match grid size.");
+  var n = this.size;
+  if (state.values.length != n * n) {
+    throw new Error("Old state does not match grid size.");
+  }
+  for (var i=0; i<n*n; ++i) {
+    if (state.values[i] > 0) {
+      var position = {
+        x: parseInt(i/n),
+        y: parseInt(i%n),
+      };
+      var value = state.values[i];
+      this.insertTile(new Tile(position, state.values[i]));
     }
-    for (var i=0; i<n*n; ++i) {
-        if (state.values[i] > 0) {
-            var position = {
-                x: parseInt(i/n),
-                y: parseInt(i%n),
-            };
-            var value = state.values[i];
-            this.insertTile(new Tile(position, state.values[i]));
-        }
-    }
+  }
 };

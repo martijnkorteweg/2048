@@ -60,25 +60,25 @@ KeyboardInputManager.prototype.listen = function () {
   // Bind score container, for restart.
   var scoreContainer = document.getElementById("score-container");
   scoreContainer.addEventListener("click", (function () {
-      var count = 0;
-      var pending = false;
-      return function (event) {
-          count += 1;
-          if (count >= 3) {
-              count = 0;
-              if (false !== pending)
-                  clearTimeout(pending);
-              pending = false;
-              self.emit("restart");
-          }
-          if (false === pending) {
-              pending = setTimeout(function () {
-                  count = 0;
-                  pending = false;
-              }, 1000);
-          }
-          event.preventDefault();
-      };
+    var count = 0;
+    var pending = false;
+    return function (event) {
+      count += 1;
+      if (count >= 3) {
+        count = 0;
+        if (false !== pending)
+          clearTimeout(pending);
+        pending = false;
+        self.emit("restart");
+      }
+      if (false === pending) {
+        pending = setTimeout(function () {
+          count = 0;
+          pending = false;
+        }, 1000);
+      }
+      event.preventDefault();
+    };
   })());
 
   // Listen to swipe events

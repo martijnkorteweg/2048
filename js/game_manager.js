@@ -234,35 +234,35 @@ GameManager.prototype.positionsEqual = function (first, second) {
 };
 
 GameManager.prototype.saveState = function () {
-    if (window.localStorage) {
-        var gameState = {
-            score: this.score,
-            gridState: this.grid.state(),
-        };
-        window.localStorage.setItem(this.storageKey, JSON.stringify(gameState));
-    }
+  if (window.localStorage) {
+    var gameState = {
+      score: this.score,
+      gridState: this.grid.state(),
+    };
+    window.localStorage.setItem(this.storageKey, JSON.stringify(gameState));
+  }
 };
 
 // Returns true if did restore, false otherwise.
 GameManager.prototype.restoreState = function () {
-    if (window.localStorage) {
-        var json = window.localStorage.getItem(this.storageKey);
-        if (json) {
-            try {
-                var gameState = JSON.parse(json);
-                this.score = gameState.score;
-                this.grid.setState(gameState.gridState);
-                return true;
-            } catch (err) {
-                this.score = 0;
-            }
-        }
+  if (window.localStorage) {
+    var json = window.localStorage.getItem(this.storageKey);
+    if (json) {
+      try {
+        var gameState = JSON.parse(json);
+        this.score = gameState.score;
+        this.grid.setState(gameState.gridState);
+        return true;
+      } catch (err) {
+        this.score = 0;
+      }
     }
-    return false;
+  }
+  return false;
 };
 
 GameManager.prototype.deleteSavedState = function () {
-    if (window.localStorage) {
-        window.localStorage.removeItem(this.storageKey);
-    }
+  if (window.localStorage) {
+    window.localStorage.removeItem(this.storageKey);
+  }
 };
