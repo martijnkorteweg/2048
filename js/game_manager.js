@@ -1,19 +1,19 @@
-function GameManager(size, InputManager, Actuator, ScoreManager) {
+function GameManager(size, InputManager, Actuator, ScoreManager, storageKey) {
   this.size         = size; // Size of the grid
   this.inputManager = new InputManager;
   this.scoreManager = new ScoreManager;
   this.actuator     = new Actuator;
-
+  this.storageKey   = storageKey;
   this.startTiles   = 2;
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
-
   this.setup();
 }
 
 // Restart the game
 GameManager.prototype.restart = function () {
+  this.deleteSavedState();
   this.actuator.restart();
   this.setup();
 };
@@ -27,7 +27,9 @@ GameManager.prototype.setup = function () {
   this.won          = false;
 
   // Add the initial tiles
-  this.addStartTiles();
+  if (!this.restoreState()) {
+    this.addStartTiles();
+  }
 
   // Update the actuator
   this.actuate();
@@ -45,7 +47,6 @@ GameManager.prototype.addRandomTile = function () {
   if (this.grid.cellsAvailable()) {
     var value = Math.random() < 0.9 ? 2 : 4;
     var tile = new Tile(this.grid.randomAvailableCell(), value);
-
     this.grid.insertTile(tile);
   }
 };
@@ -143,6 +144,11 @@ GameManager.prototype.move = function (direction) {
     }
 
     this.actuate();
+    if (this.over) {
+      this.deleteSavedState();
+    } else {
+      this.saveState();
+    }
   }
 };
 
@@ -225,4 +231,38 @@ GameManager.prototype.tileMatchesAvailable = function () {
 
 GameManager.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
+};
+
+GameManager.prototype.saveState = function () {
+    if (window.localStorage) {
+        var gameState = {
+            score: this.score,
+            gridState: this.grid.state(),
+        };
+        window.localStorage.setItem(this.storageKey, JSON.stringify(gameState));
+    }
+};
+
+// Returns true if did restore, false otherwise.
+GameManager.prototype.restoreState = function () {
+    if (window.localStorage) {
+        var json = window.localStorage.getItem(this.storageKey);
+        if (json) {
+            try {
+                var gameState = JSON.parse(json);
+                this.score = gameState.score;
+                this.grid.setState(gameState.gridState);
+                return true;
+            } catch (err) {
+                this.score = 0;
+            }
+        }
+    }
+    return false;
+};
+
+GameManager.prototype.deleteSavedState = function () {
+    if (window.localStorage) {
+        window.localStorage.removeItem(this.storageKey);
+    }
 };
